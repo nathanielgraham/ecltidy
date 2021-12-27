@@ -6,7 +6,7 @@ ecltidy reads an ECL file from STDIN and outputs the reformatted file to STDOUT.
 This is a work in progress and offers very basic features at the moment.  
 
 ## Install
-Simply copy ecltidy.pl to any directory in your system PATH.  Typically `~/bin` (or `$HOME/bin` on Windows).
+Simply copy ecltidy.pl to any directory in your system PATH.  Typically `$HOME/bin` (or `%USERPROFILE%/bin` on Windows).
 
 ## Example usage
 Issue the following command to reformat a file:
@@ -20,7 +20,7 @@ Issue the following command to reformat a file:
 
 * Install the VSCode [Custom Local Formatters](https://marketplace.visualstudio.com/items?itemName=jkillian.custom-local-formatters) extension through the VSCode extensions panel.
 
-* Edit settings.json for this extension as follows:
+* On Windows, edit settings.json for this extension to look something like this:
 
 ~~~~
     {
@@ -29,7 +29,7 @@ Issue the following command to reformat a file:
       "http.proxySupport": "fallback",
       "customLocalFormatters.formatters": [
         {
-            "command": "perl C:\\$HOME\\bin\\ecltidy.pl",
+            "command": "perl %USERPROFILE%\\bin\\ecltidy.pl",
             "languages": [
                 "ecl"
             ]
