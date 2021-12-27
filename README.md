@@ -22,6 +22,7 @@ Issue the following command to reformat a file:
 
 * Edit settings.json for this extension as follows:
 
+~~~~
     {
       "workbench.colorTheme": "Visual Studio Dark",
       "editor.tabSize": 3,
@@ -35,5 +36,6 @@ Issue the following command to reformat a file:
         }
       ],
     }
+~~~~
 
 * That's all!  You should now be able to format your ECL code with the command (shift+alt+f)
