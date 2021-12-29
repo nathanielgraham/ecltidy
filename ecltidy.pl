@@ -4,6 +4,8 @@ use strict;
 use warnings;
 
 my $indent_length = 3;
+my $begin_block = qr/:=\s?(function|record|type|transform|module|service|interface|functionmacro|macro)\b/i;
+my $end_block = qr/(end|endmacro)\s*[;$|\/{2}|:]/i;
 
 my @preprocess;
 
@@ -18,47 +20,44 @@ while (my $line = <STDIN>) {
 }
 
 my @begin_array;
+my $total_paren_balance = 0; 
+
 for my $i (0 .. $#preprocess) {
+  my $line = $preprocess[$i];
+  my $paren_balance = 0;
+  my $open_parens = () = $line =~ /\(/g;
+  my $closed_parens = () = $line =~ /\)/g;
+  $paren_balance += $open_parens;
+  $paren_balance -= $closed_parens;
   # indent_level, array_index
-  push(@begin_array, [ 0, $i ]);
+  push(@begin_array, [ $total_paren_balance, $i ]);
+  $total_paren_balance += $paren_balance unless $line =~ /^\/\//; 
 }
 
-sub calc_indent {
-  my ($aref, $begin_regex, $end_regex) = @_;
-  my $indent_level = 0;
-  my @last_match = ();
-  for my $i (0 .. $#preprocess) { 
-    my $line = $preprocess[$i];
-    my ($match) = $line =~ $begin_regex;
-    my ($match_end) = $line =~ $end_regex;
-    if ($match && !$match_end) {
-       push(@last_match, $match);
-       $aref->[$i]->[0] += $indent_level;
-       $indent_level++;
-    }
-    elsif (@last_match && $match_end) {
-       my $has_endblock = $end_regex =~ /end/i;
-       $indent_level-- if $has_endblock;
-       $aref->[$i]->[0] += $indent_level;
-       $indent_level-- unless $has_endblock;
-       pop(@last_match);
-    }
-    else {
-      $aref->[$i]->[0] += $indent_level;
-    }
+my $indent_level = 0;
+for my $i (0 .. $#preprocess) {
+  my $line = $preprocess[$i];
+  if ($line =~ /^\/\//) {
+    $begin_array[$i]->[0] += $indent_level;
   }
-  return $aref;
+  elsif ($line =~ $begin_block) {
+    $begin_array[$i]->[0] += $indent_level;
+    $indent_level++;
+  }
+  elsif ($line =~ $end_block) {
+    $indent_level--;
+    $begin_array[$i]->[0] += $indent_level;
+  }
+  else {
+    $begin_array[$i]->[0] += $indent_level;
+  }
 }
-
-my $first_pass = &calc_indent( \@begin_array, qr/:=\s?(function|record|type|transform|module|service)\b/i, qr/(end)\s*[;$|\/{2}|:]/i );
-my $second_pass = &calc_indent( $first_pass, qr/:=\s?(map|case|dataset|enum|project)\b/i, qr/\)\s*[;$|\/{2}]/i ) ;
-my $third_pass = &calc_indent( $second_pass, qr/:=\s?(functionmacro|macro)\b/i, qr/endmacro\s*[;$|:]/i ) ;
 
 my $prev_line_comment = 0;
-foreach my $line (@{$third_pass}) {
+foreach my $line (@begin_array) {
 
   # add newline before code block
-  if ($preprocess[ $line->[1] ] =~ /:=\s?(function|record|type|transform|module|service|functionmacro|macro)\b/i) {
+  if ($preprocess[ $line->[1] ] =~ /:=\s?(function|record|type|transform|module|service|functionmacro|macro|interface)\b/i) {
     print "\n" unless $prev_line_comment;
   }
   # add newline before comment block
