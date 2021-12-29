@@ -31,13 +31,13 @@ for my $i (0 .. $#preprocess) {
   $paren_balance -= $closed_parens;
   # indent_level, array_index
   push(@begin_array, [ $total_paren_balance, $i ]);
-  $total_paren_balance += $paren_balance unless $line =~ /^\/\//; 
+  $total_paren_balance += $paren_balance unless $line =~ /^\s*\/\//; 
 }
 
 my $indent_level = 0;
 for my $i (0 .. $#preprocess) {
   my $line = $preprocess[$i];
-  if ($line =~ /^\/\//) {
+  if ($line =~ /^\s*\/\//) {
     $begin_array[$i]->[0] += $indent_level;
   }
   elsif ($line =~ $begin_block) {
