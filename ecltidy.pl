@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 my $indent_length = 3;
-my $begin_block = qr/:=\s?(function|record|type|transform|module|service|interface|functionmacro|macro)\b/i;
+my $begin_block = qr/:=\s*(function|record|type|transform|module|service|interface|functionmacro|macro)\b/i;
 my $end_block = qr/(end|endmacro)\s*[;$|\/{2}|:]/i;
 
 my @preprocess;
