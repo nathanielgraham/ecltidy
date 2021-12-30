@@ -5,7 +5,7 @@ use warnings;
 
 my $indent_length = 3;
 my $begin_block = qr/:=\s*(function|record|type|transform|module|service|interface|functionmacro|macro)\b/i;
-my $end_block = qr/(end|endmacro)\s*[;$|\/{2}|:]/i;
+my $end_block = qr/\b(end|endmacro)\s*[;$|\/{2}|:]/i;
 
 my @preprocess;
 
@@ -23,7 +23,12 @@ my @begin_array;
 my $total_paren_balance = 0; 
 
 for my $i (0 .. $#preprocess) {
-  my $line = $preprocess[$i];
+
+  # ignore parens after eol comment
+  my ($line) = $preprocess[$i] =~ /^(.*?)(\/\/.*?)?$/;
+
+  # ignore parens between non-escaped quotes
+  $line =~ s/(?<!\\)'.*?(?<!\\)'//g;
   my $paren_balance = 0;
   my $open_parens = () = $line =~ /\(/g;
   my $closed_parens = () = $line =~ /\)/g;
@@ -33,6 +38,9 @@ for my $i (0 .. $#preprocess) {
   push(@begin_array, [ $total_paren_balance, $i ]);
   $total_paren_balance += $paren_balance unless $line =~ /^\s*\/\//; 
 }
+
+# something went wrong if parentheses are not balanced
+die "Unbalanced parentheses" unless $total_paren_balance == 0; 
 
 my $indent_level = 0;
 for my $i (0 .. $#preprocess) {
@@ -71,4 +79,3 @@ foreach my $line (@begin_array) {
   my $indent = ' ' x ($indent_length * $line->[0]);
   print $indent . $preprocess[ $line->[1] ] . "\n";
 }
-
