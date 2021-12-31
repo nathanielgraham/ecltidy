@@ -2,9 +2,7 @@
 ECL file reformatter and indenter
 
 ## Description
-ecltidy reads an ECL file from STDIN and outputs the reformatted file to STDOUT.
-This is a work in progress and offers very basic features at the moment.
-Use at your own risk.
+ecltidy reads ECL from STDIN and outputs the reformatted text to STDOUT.
 
 ## Install
 Simply copy ecltidy.pl to any directory in your system PATH.  Typically `$HOME/bin` (or `%USERPROFILE%/bin` on Windows).
@@ -17,7 +15,7 @@ Issue the following command to reformat a file:
 ## VSCode install 
 * Verify that Perl is installed on your system. 
 
-* Verify that ecltidy.pl has been copied to $HOME/bin
+* Verify that ecltidy.pl has been copied to a suitable directory.
 
 * Install the VSCode [Custom Local Formatters](https://marketplace.visualstudio.com/items?itemName=jkillian.custom-local-formatters) extension through the VSCode extensions panel.
 
