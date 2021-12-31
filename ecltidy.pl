@@ -14,8 +14,7 @@ while (my $line = <STDIN>) {
   next if $line =~ /^\s*$/;
   $line =~ s/^\s+//;
   $line =~ s/\s+$//;
-  $line =~ s/\s+/ /;
-  $line =~ s/\t+/ /;
+  $line =~ s/\s+/ /g;
   push(@preprocess, $line);
 }
 
